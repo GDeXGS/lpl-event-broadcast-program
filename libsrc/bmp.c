@@ -45,6 +45,13 @@ struct BmpFile *create_bmp(const char *bmpfile)
 	
 	// 申请像素存储空间
 	bmp->bitmap = (unsigned char *)malloc(bmp->width*bmp->height*bmp->pixbyte);
+	if(bmp->bitmap == NULL)
+	{
+		perror("bmp malloc error");
+		fclose(file);
+		free(bmp->bitmap);
+		return NULL;
+	}
 	
 	// 从文件中读取像素
 	int i=0;
@@ -93,14 +100,13 @@ bool destroy_bmp(struct BmpFile *bmp)
 	返回值：
 		成功返回struct BmpFile类型结构体指针，失败返回NULL
 */
-struct BmpFile *change_size(struct BmpFile *bmp, int destw, int desth)
+bool change_size(struct BmpFile *bmp, int destw, int desth)
 {
 	// 申请结构体空间
 	struct BmpFile *dest_bmp = malloc(sizeof(struct BmpFile));
-	if(dest_bmp == NULL)
-	{
+	if(dest_bmp == NULL) {
 		perror("bmp malloc error");
-		return NULL;
+		return FALSE;
 	}
 	
 	// 初始化宽，高
@@ -110,16 +116,18 @@ struct BmpFile *change_size(struct BmpFile *bmp, int destw, int desth)
 	
 	// 申请像素存储空间
 	dest_bmp->bitmap = (unsigned char *)malloc(dest_bmp->width*dest_bmp->height*dest_bmp->pixbyte);
-	
+	if(dest_bmp->bitmap == NULL) {
+		perror("bitmap malloc error");
+		free(dest_bmp);
+		return FALSE;
+	}
 	
 	int i=0, j=0;
 	int src_x=0, src_y=0;
 	int dest_x=0, dest_y=0;
 	// 以一个像素点为单位进行缩放
-	for(i=0; i<desth;i++)
-	{
-		for(j=0; j<destw; j++)
-		{
+	for(i=0; i<desth;i++) {
+		for(j=0; j<destw; j++) {
 			dest_x = j; dest_y = i;
 			src_x = dest_x * bmp->width / destw;
 			src_y = dest_y * bmp->height / desth;
@@ -131,7 +139,8 @@ struct BmpFile *change_size(struct BmpFile *bmp, int destw, int desth)
 	}
 	
 	destroy_bmp(bmp);
-	return dest_bmp;
+	bmp = dest_bmp;
+	return TRUE;
 }
 
 

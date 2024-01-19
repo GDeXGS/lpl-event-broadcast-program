@@ -64,7 +64,7 @@ bool destroy_bmp(struct BmpFile *bmp);
 	返回值：
 		成功返回struct BmpFile类型结构体指针，失败返回NULL
 */
-struct BmpFile *change_size(struct BmpFile *bmp , int destw, int desth);
+bool change_size(struct BmpFile *bmp , int destw, int desth);
 
 #endif//_BMP_H_
 

@@ -414,7 +414,10 @@ void ShowPictrue(LcdDevice *lcd, const char *picname, const struct showconfig *p
 	}
 	
 	//改变bmp图片大小为指定宽高
-	bmp = change_size(bmp, p->w, p->h);
+	bool ret = change_size(bmp, p->w, p->h);
+	if (ret == false) {
+		printf("change_size failed\n");
+	}
 	
 	//刷到lcd指定区域
 	unsigned int *ptr = (unsigned int*)lcd->mptr+p->y*lcd->width+p->x;
